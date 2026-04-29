@@ -19,7 +19,7 @@ type Resource = {
 export default function Resources() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  
+
   const { data: resources = [], isLoading } = useQuery({
     queryKey: ['/api/resources'],
     queryFn: async () => {
@@ -30,38 +30,38 @@ export default function Resources() {
       return response.json();
     },
   });
-  
+
   // Filter resources based on search query and selected tag
   const filteredResources = resources.filter((resource: Resource) => {
-    const matchesSearch = searchQuery === "" || 
+    const matchesSearch = searchQuery === "" ||
       resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       resource.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesTag = selectedTag === null || resource.tags.includes(selectedTag);
-    
+
     return matchesSearch && matchesTag;
   });
-  
+
   const handleTagClick = (tag: string) => {
     setSelectedTag(selectedTag === tag ? null : tag);
   };
-  
+
   const popularTags = [
-    "Anxiety", "Depression", "Stress Management", "Sleep", 
+    "Anxiety", "Depression", "Stress Management", "Sleep",
     "Self-Care", "Social Anxiety", "Mindfulness"
   ];
-  
+
   return (
     <div className="p-4 max-w-3xl mx-auto">
       <Card className="mb-6">
         <CardContent className="p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Mental Health Resources</h2>
-          
+
           <div className="mb-6">
             <div className="relative">
-              <Input 
-                type="text" 
-                placeholder="Search resources..." 
+              <Input
+                type="text"
+                placeholder="Search resources..."
                 className="w-full pl-10 pr-4 py-2"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -73,7 +73,7 @@ export default function Resources() {
               </div>
             </div>
           </div>
-          
+
           <div className="mb-8">
             <h3 className="font-medium text-gray-800 mb-3">Popular Topics</h3>
             <div className="flex flex-wrap gap-2">
@@ -82,8 +82,8 @@ export default function Resources() {
                   key={index}
                   onClick={() => handleTagClick(tag)}
                   className={`inline-block px-3 py-1 rounded-full text-sm transition-colors duration-200 
-                    ${selectedTag === tag 
-                      ? 'bg-primary text-white' 
+                    ${selectedTag === tag
+                      ? 'bg-primary text-white'
                       : 'bg-blue-100 text-primary hover:bg-blue-200'}`}
                 >
                   {tag}
@@ -91,7 +91,7 @@ export default function Resources() {
               ))}
             </div>
           </div>
-          
+
           {/* Featured Resources */}
           <div className="mb-8">
             <h3 className="font-medium text-gray-800 mb-3">Featured Resources</h3>
@@ -106,7 +106,7 @@ export default function Resources() {
                   <a href="#" className="text-primary text-sm font-medium hover:underline">Read article →</a>
                 </div>
               </div>
-              
+
               <div className="border border-gray-200 rounded-lg overflow-hidden">
                 <div className="h-32 bg-secondary-light flex items-center justify-center">
                   <Heart className="h-12 w-12 text-white" />
@@ -119,11 +119,11 @@ export default function Resources() {
               </div>
             </div>
           </div>
-          
+
           {/* Resources List */}
           <div>
             <h3 className="font-medium text-gray-800 mb-3">All Resources</h3>
-            
+
             {isLoading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div>
@@ -134,8 +134,8 @@ export default function Resources() {
                 <Book className="h-12 w-12 mx-auto mb-2 opacity-30" />
                 <p>No resources found matching your criteria.</p>
                 {selectedTag && (
-                  <button 
-                    onClick={() => setSelectedTag(null)} 
+                  <button
+                    onClick={() => setSelectedTag(null)}
                     className="text-primary mt-2 hover:underline"
                   >
                     Clear filter
@@ -145,7 +145,13 @@ export default function Resources() {
             ) : (
               <div className="space-y-3">
                 {filteredResources.map((resource: Resource) => (
-                  <div key={resource.id} className="p-4 border border-gray-200 rounded-lg hover:border-primary transition-colors duration-150">
+                  <a
+                    key={resource.id}
+                    href={resource.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-4 border border-gray-200 rounded-lg hover:border-primary transition-colors duration-150 cursor-pointer"
+                  >hover:border-primary transition-colors duration-150"
                     <div className="flex items-start">
                       <div className="flex-shrink-0 bg-blue-100 rounded-lg p-2 mr-3">
                         {resource.icon === "book" && <Book className="h-5 w-5 text-primary" />}
@@ -161,11 +167,11 @@ export default function Resources() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </a>
                 ))}
               </div>
             )}
-            
+
             {filteredResources.length > 5 && (
               <div className="mt-4 text-center">
                 <button className="text-primary hover:text-primary-dark font-medium inline-flex items-center">

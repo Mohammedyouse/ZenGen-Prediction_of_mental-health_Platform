@@ -1,4 +1,4 @@
-import { 
+import {
   users, type User, type InsertUser,
   assessments, type Assessment, type InsertAssessment,
   chatMessages, type ChatMessage, type InsertChatMessage,
@@ -14,24 +14,24 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserPassword(id: number, password: string): Promise<User | undefined>;
-  
+
   // Assessment methods
   createAssessment(assessment: { answers: Record<string, number>, results?: any }): Promise<Assessment>;
   getAssessments(): Promise<Assessment[]>;
-  
+
   // Chat methods
   createChatMessage(message: { role: string, content: string }): Promise<ChatMessage>;
   getChatMessages(): Promise<ChatMessage[]>;
-  
+
   // Resource methods
-  createResource(resource: { 
-    title: string, 
-    description: string, 
-    type: string, 
-    icon: string, 
-    duration: string, 
-    tags: string[], 
-    url: string 
+  createResource(resource: {
+    title: string,
+    description: string,
+    type: string,
+    icon: string,
+    duration: string,
+    tags: string[],
+    url: string
   }): Promise<Resource>;
   getResources(): Promise<Resource[]>;
   getResourceByTitle(title: string): Promise<Resource | undefined>;
@@ -60,10 +60,10 @@ export class DatabaseStorage implements IStorage {
       .set({ password })
       .where(eq(users.id, id))
       .returning();
-    
+
     return results.length > 0 ? results[0] : undefined;
   }
-  
+
   // Assessment methods
   async createAssessment(assessmentData: { answers: Record<string, number>, results?: any }): Promise<Assessment> {
     const insertData: InsertAssessment = {
@@ -71,15 +71,15 @@ export class DatabaseStorage implements IStorage {
       answers: assessmentData.answers,
       results: assessmentData.results || null
     };
-    
+
     const result = await db.insert(assessments).values(insertData).returning();
     return result[0];
   }
-  
+
   async getAssessments(): Promise<Assessment[]> {
     return await db.select().from(assessments);
   }
-  
+
   // Chat methods
   async createChatMessage(messageData: { role: string, content: string }): Promise<ChatMessage> {
     const insertData: InsertChatMessage = {
@@ -87,25 +87,26 @@ export class DatabaseStorage implements IStorage {
       role: messageData.role,
       content: messageData.content
     };
-    
+
     const result = await db.insert(chatMessages).values(insertData).returning();
     return result[0];
   }
-  
+
   async getChatMessages(): Promise<ChatMessage[]> {
     return await db.select().from(chatMessages);
   }
-  
+
   // Resource methods
-  async createResource(resourceData: { 
-    title: string, 
-    description: string, 
-    type: string, 
-    icon: string, 
-    duration: string, 
-    tags: string[], 
-    url: string 
+  async createResource(resourceData: {
+    title: string,
+    description: string,
+    type: string,
+    icon: string,
+    duration: string,
+    tags: string[],
+    url: string
   }): Promise<Resource> {
+
     const insertData: InsertResource = {
       title: resourceData.title,
       description: resourceData.description,
@@ -115,20 +116,18 @@ export class DatabaseStorage implements IStorage {
       tags: resourceData.tags,
       url: resourceData.url
     };
-    
-    const result = await db.insert(resources).values(insertData).returning();
+
+    const result = await db.insert(resources).values(insertData as any).returning();
     return result[0];
   }
-  
+
   async getResources(): Promise<Resource[]> {
     return await db.select().from(resources);
   }
-  
+
   async getResourceByTitle(title: string): Promise<Resource | undefined> {
     const results = await db.select().from(resources).where(eq(resources.title, title));
     return results.length > 0 ? results[0] : undefined;
   }
-}
 
-// Export database storage instance
-export const storage = new DatabaseStorage();
+} export const storage = new DatabaseStorage();

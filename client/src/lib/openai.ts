@@ -13,11 +13,22 @@ export interface ChatResponse {
 }
 
 export async function sendChatMessage(messages: ChatMessage[]): Promise<ChatResponse> {
-  // Send all messages to provide context for the response
   if (messages.length > 0 && messages[messages.length - 1].role === "user") {
-    const response = await apiRequest("POST", "/api/chat", { messages });
-    const data = await response.json();
-    return data;
+
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ messages }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Chat request failed");
+    }
+
+    return res.json();
+
   } else {
     throw new Error("Invalid message format");
   }

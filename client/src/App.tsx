@@ -13,36 +13,39 @@ import AssessmentResults from "@/pages/AssessmentResults";
 import Chat from "@/pages/Chat";
 import Resources from "@/pages/Resources";
 import Profile from "@/pages/Profile";
-import AuthPage from "@/pages/auth-page";
+
 import Navigation from "@/components/Navigation";
 import MobileNavigation from "@/components/MobileNavigation";
-import { AuthProvider, useAuth } from "@/hooks/use-auth";
-import { ProtectedRoute } from "@/lib/protected-route";
 
 function AppRoutes() {
-  const { user } = useAuth();
-  
   return (
     <>
-      {user && <Navigation />}
-      <main className={user ? "pt-16 pb-16 md:pb-0" : ""}>
+      <Navigation />
+
+      <main className="pt-16 pb-16 md:pb-0">
         <Switch>
+
+          {/* Redirect root → home */}
           <Route path="/">
-            <Redirect to="/auth" />
+            <Redirect to="/home" />
           </Route>
-          <ProtectedRoute path="/home" component={Home} />
-          <ProtectedRoute path="/assessment" component={Assessment} />
-          <ProtectedRoute path="/assessment/intro" component={AssessmentIntro} />
-          <ProtectedRoute path="/assessment/question/:id" component={AssessmentQuestion} />
-          <ProtectedRoute path="/assessment/results" component={AssessmentResults} />
-          <ProtectedRoute path="/chat" component={Chat} />
-          <ProtectedRoute path="/resources" component={Resources} />
-          <ProtectedRoute path="/profile" component={Profile} />
-          <Route path="/auth" component={AuthPage} />
+
+          {/* Normal routes (no auth) */}
+          <Route path="/home" component={Home} />
+          <Route path="/assessment" component={Assessment} />
+          <Route path="/assessment/intro" component={AssessmentIntro} />
+          <Route path="/assessment/question/:id" component={AssessmentQuestion} />
+          <Route path="/assessment/results" component={AssessmentResults} />
+          <Route path="/chat" component={Chat} />
+          <Route path="/resources" component={Resources} />
+          <Route path="/profile" component={Profile} />
+
+          {/* 404 fallback */}
           <Route component={NotFound} />
         </Switch>
       </main>
-      {user && <MobileNavigation />}
+
+      <MobileNavigation />
     </>
   );
 }
@@ -50,14 +53,12 @@ function AppRoutes() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <div className="min-h-screen bg-gray-50">
-            <AppRoutes />
-          </div>
-          <Toaster />
-        </TooltipProvider>
-      </AuthProvider>
+      <TooltipProvider>
+        <div className="min-h-screen bg-gray-50">
+          <AppRoutes />
+        </div>
+        <Toaster />
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }

@@ -1,9 +1,4 @@
-/**
- * Database initialization script for ZenGen
- * 
- * This script runs the Drizzle push command to initialize or update the database schema.
- * Run it after setting up your DATABASE_URL in the .env file.
- */
+
 
 const { execSync } = require('child_process');
 const fs = require('fs');
@@ -30,8 +25,8 @@ console.log('Initializing database schema...');
 try {
   // Run Drizzle push command to update database schema
   execSync('npx drizzle-kit push', { stdio: 'inherit' });
-  
-  console.log('\n✅ Database initialization complete!');
+
+  console.log('\n Database initialization complete!');
   console.log('\nYou can now start the application with:');
   console.log('- npm run dev');
   console.log('- Or using the VS Code launch configuration');

@@ -1,8 +1,16 @@
+import dotenv from "dotenv";
+dotenv.config(); // MUST BE FIRST
+
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors"; // ✅ ADD
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+
+// ✅ Enable CORS (important for Netlify → Render)
+app.use(cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -44,31 +52,23 @@ app.use((req, res, next) => {
     const message = err.message || "Internal Server Error";
 
     res.status(status).json({ message });
-    throw err;
+    console.error(err); // safer than throw
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
+  // Only setup vite in development
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    console.log(`=================================================`);
-    console.log(`Server running at http://localhost:${port}`); 
-    console.log(`Open this URL in your browser to view the app`);
-    console.log(`=================================================`);
+  // ✅ IMPORTANT: Use Render port
+  const port = process.env.PORT || 5000;
+
+  server.listen(port, "0.0.0.0", () => {
+    console.log("=================================================");
+    console.log(`Server running at http://localhost:${port}`);
+    console.log("=================================================");
     log(`serving on port ${port}`);
   });
 })();
