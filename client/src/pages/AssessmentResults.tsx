@@ -3,23 +3,23 @@ import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Heart, Book, Users, AlertTriangle, 
-  Brain, UserCheck, ThumbsUp, Activity 
+import {
+  Heart, Book, Users, AlertTriangle,
+  Brain, UserCheck, ThumbsUp, Activity
 } from "lucide-react";
 import EmergencyResources from "@/components/EmergencyResources";
 import MentalHealthRadarChart from "@/components/MentalHealthRadarChart";
-import { 
-  analyzeAssessmentResults, 
-  type AssessmentResult, 
-  type MentalHealthPrediction 
+import {
+  analyzeAssessmentResults,
+  type AssessmentResult,
+  type MentalHealthPrediction
 } from "@/lib/openai";
 import { useQuery } from "@tanstack/react-query";
 
 export default function AssessmentResults() {
   const [, setLocation] = useLocation();
   const [answers, setAnswers] = useState<Record<string, number>>({});
-  
+
   useEffect(() => {
     // Get stored answers from sessionStorage
     const stored = sessionStorage.getItem("assessment_answers");
@@ -30,7 +30,7 @@ export default function AssessmentResults() {
       setLocation("/assessment/intro");
     }
   }, [setLocation]);
-  
+
   const { data: results, isLoading, error } = useQuery({
     queryKey: ['/api/assessment/analyze'],
     queryFn: async () => {
@@ -48,7 +48,7 @@ export default function AssessmentResults() {
   const handleTalkToAssistant = () => {
     setLocation("/chat");
   };
-  
+
   if (isLoading) {
     return (
       <div className="p-4 max-w-3xl mx-auto">
@@ -66,7 +66,7 @@ export default function AssessmentResults() {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="p-4 max-w-3xl mx-auto">
@@ -84,7 +84,7 @@ export default function AssessmentResults() {
       </div>
     );
   }
-  
+
   if (!results) {
     return (
       <div className="p-4 max-w-3xl mx-auto">
@@ -131,11 +131,11 @@ export default function AssessmentResults() {
           </div>
         </div>
       </div>
-      
+
       <Card>
         <CardContent className="p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Your Mental Wellness Results</h2>
-          
+
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700">Overall Wellness Score</span>
@@ -144,21 +144,21 @@ export default function AssessmentResults() {
             <Progress value={results.overallScore} className="h-3" />
             <p className="mt-2 text-sm text-gray-600">{results.summary}</p>
           </div>
-          
+
           <div className="mb-8">
             <div className="mb-4">
               <h3 className="font-medium text-gray-800 mb-2">Your Mental Health Profile</h3>
               <p className="text-sm text-gray-600">This radar chart shows your scores across different mental health dimensions.</p>
             </div>
-            
+
             <div className="bg-neutral-light p-4 rounded-lg">
-              <MentalHealthRadarChart 
+              <MentalHealthRadarChart
                 moodScore={results.moodScore}
                 anxietyScore={results.anxietyScore}
                 socialScore={results.socialScore}
               />
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
               <div className="bg-accent/20 p-3 rounded-lg">
                 <h4 className="font-medium text-gray-800 mb-1">Mood & Emotions</h4>
@@ -168,7 +168,7 @@ export default function AssessmentResults() {
                 </div>
                 <p className="text-xs text-gray-500 mt-1">Higher score indicates better mood regulation</p>
               </div>
-              
+
               <div className="bg-accent/20 p-3 rounded-lg">
                 <h4 className="font-medium text-gray-800 mb-1">Anxiety Levels</h4>
                 <div className="flex items-center mb-1">
@@ -177,7 +177,7 @@ export default function AssessmentResults() {
                 </div>
                 <p className="text-xs text-gray-500 mt-1">Higher score indicates lower anxiety levels</p>
               </div>
-              
+
               <div className="bg-accent/20 p-3 rounded-lg">
                 <h4 className="font-medium text-gray-800 mb-1">Social Connections</h4>
                 <div className="flex items-center mb-1">
@@ -188,19 +188,19 @@ export default function AssessmentResults() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-blue-50 rounded-lg p-4 mb-6">
             <h3 className="font-medium text-gray-800 mb-2">What These Results Mean</h3>
             <p className="text-gray-600 text-sm">
               {results.summary}
             </p>
           </div>
-          
+
           {/* Mental Health Predictions Section */}
           <div className="mb-6">
             <h3 className="font-medium text-gray-800 mb-3">Mental Health Screening Results</h3>
             <p className="text-sm text-gray-600 mb-3">
-              Based on your responses, we've generated the following mental health screening results. 
+              Based on your responses, we've generated the following mental health screening results.
               These are not diagnoses but potential indicators to discuss with a healthcare professional.
             </p>
             <div className="space-y-4">
@@ -208,27 +208,27 @@ export default function AssessmentResults() {
                 // Choose icon and background color based on condition and severity
                 let Icon = Brain;
                 let bgColor = "bg-neutral-light";
-                
+
                 if (prediction.condition === "Depression") {
                   Icon = Brain;
-                  bgColor = prediction.severity === "none" ? "bg-green-50" : 
-                           prediction.severity === "mild" ? "bg-yellow-50" : 
-                           prediction.severity === "moderate" ? "bg-orange-50" : "bg-red-50";
+                  bgColor = prediction.severity === "none" ? "bg-green-50" :
+                    prediction.severity === "mild" ? "bg-yellow-50" :
+                      prediction.severity === "moderate" ? "bg-orange-50" : "bg-red-50";
                 } else if (prediction.condition === "Anxiety") {
                   Icon = Activity;
-                  bgColor = prediction.severity === "none" ? "bg-green-50" : 
-                           prediction.severity === "mild" ? "bg-yellow-50" : 
-                           prediction.severity === "moderate" ? "bg-orange-50" : "bg-red-50";
+                  bgColor = prediction.severity === "none" ? "bg-green-50" :
+                    prediction.severity === "mild" ? "bg-yellow-50" :
+                      prediction.severity === "moderate" ? "bg-orange-50" : "bg-red-50";
                 } else if (prediction.condition === "Social Isolation") {
                   Icon = Users;
-                  bgColor = prediction.severity === "none" ? "bg-green-50" : 
-                           prediction.severity === "mild" ? "bg-yellow-50" : 
-                           prediction.severity === "moderate" ? "bg-orange-50" : "bg-red-50";
+                  bgColor = prediction.severity === "none" ? "bg-green-50" :
+                    prediction.severity === "mild" ? "bg-yellow-50" :
+                      prediction.severity === "moderate" ? "bg-orange-50" : "bg-red-50";
                 } else if (prediction.condition === "Positive Mental Health") {
                   Icon = ThumbsUp;
                   bgColor = "bg-green-50";
                 }
-                
+
                 return (
                   <div key={index} className={`${bgColor} p-4 rounded-lg`}>
                     <div className="flex items-start">
@@ -239,11 +239,10 @@ export default function AssessmentResults() {
                         <div className="flex items-center mb-1">
                           <h4 className="font-medium text-gray-800">{prediction.condition}</h4>
                           {prediction.severity !== "none" && (
-                            <span className={`ml-2 text-xs px-2 py-0.5 rounded ${
-                              prediction.severity === "mild" ? "bg-yellow-100 text-yellow-800" :
-                              prediction.severity === "moderate" ? "bg-orange-100 text-orange-800" :
-                              prediction.severity === "severe" ? "bg-red-100 text-red-800" : ""
-                            }`}>
+                            <span className={`ml-2 text-xs px-2 py-0.5 rounded ${prediction.severity === "mild" ? "bg-yellow-100 text-yellow-800" :
+                                prediction.severity === "moderate" ? "bg-orange-100 text-orange-800" :
+                                  prediction.severity === "severe" ? "bg-red-100 text-red-800" : ""
+                              }`}>
                               {prediction.severity.charAt(0).toUpperCase() + prediction.severity.slice(1)}
                             </span>
                           )}
@@ -264,7 +263,7 @@ export default function AssessmentResults() {
               })}
             </div>
           </div>
-          
+
           <div className="mb-6">
             <h3 className="font-medium text-gray-800 mb-3">Recommendations For You</h3>
             <div className="space-y-3">
@@ -283,15 +282,15 @@ export default function AssessmentResults() {
               ))}
             </div>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row justify-center gap-3">
-            <Button 
+            <Button
               onClick={handleViewDetailedReport}
               className="bg-primary hover:bg-primary-dark text-white"
             >
               View Detailed Report
             </Button>
-            <Button 
+            <Button
               onClick={handleTalkToAssistant}
               className="bg-secondary hover:bg-secondary-dark text-white"
             >
