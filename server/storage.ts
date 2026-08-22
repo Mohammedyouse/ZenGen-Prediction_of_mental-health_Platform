@@ -4,7 +4,7 @@ import {
   chatMessages, type ChatMessage, type InsertChatMessage,
   resources, type Resource, type InsertResource
 } from "@shared/schema";
-import { db } from "./db";
+import { db } from "./db.js";
 import { eq } from "drizzle-orm";
 
 // Storage interface remains the same

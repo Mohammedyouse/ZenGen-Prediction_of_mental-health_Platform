@@ -1,9 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage } from "./storage.js";
 import { assessmentQuestions } from "@shared/schema";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { setupAuth } from "./auth";
+import { setupAuth } from "./auth.js";
 
 // the newest Gemini model is "gemini-1.5-flash" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const MODEL_NAME = "gemini-1.5-flash";
