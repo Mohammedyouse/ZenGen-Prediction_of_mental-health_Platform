@@ -4,10 +4,10 @@ import { Express } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { storage } from "./storage.js";
+import { storage } from "./storage";
 import { User as AppUser } from "@shared/schema";
 import connectPg from "connect-pg-simple";
-import { pool } from "./db.js";
+import { pool } from "./db";
 
 declare global {
   namespace Express {

@@ -3,8 +3,8 @@ dotenv.config(); // MUST BE FIRST
 
 import express, { type Request, Response, NextFunction } from "express";
 import cors from "cors"; // ✅ ADD
-import { registerRoutes } from "./routes.js";
-import { setupVite, serveStatic, log } from "./vite.js";
+import { registerRoutes } from "./routes";
+import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 

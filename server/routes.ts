@@ -1,12 +1,11 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage.js";
+import { storage } from "./storage";
 import { assessmentQuestions } from "@shared/schema";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { setupAuth } from "./auth.js";
+import { setupAuth } from "./auth";
 
-// the newest Gemini model is "gemini-1.5-flash" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const MODEL_NAME = "gemini-1.5-flash";
+const MODEL_NAME = "gemini-3.6-flash";
 
 // Initialize gemenai ai 
 
@@ -127,7 +126,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const genAI = new GoogleGenerativeAI(apiKey);
 
             const model = genAI.getGenerativeModel({
-              model: "gemini-1.5-flash-latest"
+              model: MODEL_NAME
             });
 
             const aiResult = await model.generateContent(prompt);
@@ -232,7 +231,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+      const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
       // get last user message
       const lastMessage = messages[messages.length - 1]?.content || "";
