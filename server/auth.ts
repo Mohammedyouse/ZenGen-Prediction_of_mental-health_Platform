@@ -5,13 +5,13 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User } from "@shared/schema";
+import { User as AppUser } from "@shared/schema";
 import connectPg from "connect-pg-simple";
 import { pool } from "./db";
 
 declare global {
   namespace Express {
-    interface User extends User { }
+    interface User extends AppUser { }
   }
 }
 
@@ -67,7 +67,7 @@ export function setupAuth(app: Express) {
     }),
   );
 
-  
+
   passport.serializeUser((user, done) => done(null, user.id));
   passport.deserializeUser(async (id: number, done) => {
     try {
@@ -101,7 +101,7 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", (err: any, user: Express.User | false | undefined, info: any) => {
       if (err) return next(err);
       if (!user) {
         return res.status(401).json({ message: "Invalid username or password" });

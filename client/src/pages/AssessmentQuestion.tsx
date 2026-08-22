@@ -15,26 +15,26 @@ export default function AssessmentQuestion() {
     const stored = sessionStorage.getItem("assessment_answers");
     return stored ? JSON.parse(stored) : {};
   });
-  
-  const questionId = parseInt(params.id);
+
+  const questionId = parseInt(params.id ?? "", 10);
   const question = assessmentQuestions.find(q => q.id === questionId);
-  
+
   // Calculate which step we're on for the progress indicator
   const getStep = (id: number) => {
     if (id <= 3) return 2;  // Mood questions (1-3)
     if (id <= 6) return 3;  // Thought questions (4-6)
     return 3; // Default to step 3
   };
-  
+
   const currentStep = getStep(questionId);
-  
+
   const handleAnswer = (value: string) => {
     const newAnswers = { ...answers, [questionId]: parseInt(value) };
     setAnswers(newAnswers);
     // Store answers in sessionStorage
     sessionStorage.setItem("assessment_answers", JSON.stringify(newAnswers));
   };
-  
+
   const handleNext = () => {
     if (questionId < assessmentQuestions.length) {
       setLocation(`/assessment/question/${questionId + 1}`);
@@ -43,7 +43,7 @@ export default function AssessmentQuestion() {
       setLocation("/assessment/results");
     }
   };
-  
+
   const handlePrevious = () => {
     if (questionId > 1) {
       setLocation(`/assessment/question/${questionId - 1}`);
@@ -51,11 +51,11 @@ export default function AssessmentQuestion() {
       setLocation("/assessment/intro");
     }
   };
-  
+
   if (!question) {
     return <div>Question not found</div>;
   }
-  
+
   return (
     <div className="p-4 max-w-3xl mx-auto">
       <div className="py-4">
@@ -84,25 +84,25 @@ export default function AssessmentQuestion() {
           </div>
         </div>
       </div>
-      
+
       <Card>
         <CardContent className="p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-6">{question.text}</h2>
-          
-          <RadioGroup 
-            value={answers[questionId]?.toString() || ""} 
+
+          <RadioGroup
+            value={answers[questionId]?.toString() || ""}
             onValueChange={handleAnswer}
             className="space-y-3 mb-8"
           >
             {question.options.map((option, index) => (
               <div key={index} className="flex items-center p-3 bg-neutral-light rounded-lg cursor-pointer hover:bg-neutral transition">
-                <RadioGroupItem 
-                  value={option.value.toString()} 
-                  id={`option-${index}`} 
+                <RadioGroupItem
+                  value={option.value.toString()}
+                  id={`option-${index}`}
                   className="h-5 w-5"
                 />
-                <Label 
-                  htmlFor={`option-${index}`} 
+                <Label
+                  htmlFor={`option-${index}`}
                   className="ml-3 text-gray-700 cursor-pointer"
                 >
                   {option.text}
@@ -110,7 +110,7 @@ export default function AssessmentQuestion() {
               </div>
             ))}
           </RadioGroup>
-          
+
           <div className="flex justify-between">
             <Button
               onClick={handlePrevious}
