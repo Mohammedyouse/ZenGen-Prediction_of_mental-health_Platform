@@ -3,7 +3,7 @@ import {
   assessments, type Assessment, type InsertAssessment,
   chatMessages, type ChatMessage, type InsertChatMessage,
   resources, type Resource, type InsertResource
-} from "@shared/schema";
+} from "../shared/schema.js";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 

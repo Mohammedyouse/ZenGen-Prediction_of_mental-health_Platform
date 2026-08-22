@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { assessmentQuestions } from "@shared/schema";
+import { assessmentQuestions } from "../shared/schema.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { setupAuth } from "./auth";
 

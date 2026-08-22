@@ -5,7 +5,7 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User as AppUser } from "@shared/schema";
+import { User as AppUser } from "../shared/schema.js";
 import connectPg from "connect-pg-simple";
 import { pool } from "./db";
 
