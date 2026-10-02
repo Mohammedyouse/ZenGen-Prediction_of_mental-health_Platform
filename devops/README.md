@@ -17,6 +17,7 @@ ZenGen is a mental health prediction platform developed using React, TypeScript,
 
 
 ### 1. CI/CD Pipeline
+
 GitHub Actions automates dependency installation, TypeScript checking, and application build.
 
 ### 2. Configuration Management
