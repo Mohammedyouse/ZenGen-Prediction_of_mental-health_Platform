@@ -1,0 +1,29 @@
+
+name: ZenGen Kubernetes Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate-kubernetes:
+    name: Validate Kubernetes Manifests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: latest
+
+      - name: Validate Deployment YAML
+        run: kubectl apply --dry-run=client --validate=false -f devops/kubernetes/deployment.yaml
+
+      - name: Validate Service YAML
+        run: kubectl apply --dry-run=client --validate=false -f devops/kubernetes/service.yaml
