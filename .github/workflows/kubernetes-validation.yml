@@ -20,7 +20,8 @@ jobs:
       - name: Install kubeconform
         uses: bmuschko/setup-kubeconform@v1
         with:
-          version: "0.6.7"
+with:
+  kubeconform-version: "0.6.7"
 
       - name: Validate Deployment YAML
         run: kubeconform -strict -summary devops/kubernetes/deployment.yaml
