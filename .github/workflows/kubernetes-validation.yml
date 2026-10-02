@@ -17,13 +17,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v4
+      - name: Install kubeconform
+        uses: bmuschko/setup-kubeconform@v1
         with:
-          version: latest
+          version: "0.6.7"
 
       - name: Validate Deployment YAML
-        run: kubectl apply --dry-run=client --validate=false -f devops/kubernetes/deployment.yaml
+        run: kubeconform -strict -summary devops/kubernetes/deployment.yaml
 
       - name: Validate Service YAML
-        run: kubectl apply --dry-run=client --validate=false -f devops/kubernetes/service.yaml
+        run: kubeconform -strict -summary devops/kubernetes/service.yaml
