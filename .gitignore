@@ -34,3 +34,5 @@ dist/
 .env
 .vscode/
 *.log
+# Local Netlify folder
+.netlify

@@ -1,75 +1,118 @@
-# ZenGen - Teen Mental Health Platform
+# ZenGen — Teen Mental Health Support Platform
 
-ZenGen is a web-based mental health support platform designed for teenagers. 
-It provides a structured assessment system along with AI-powered support to help users understand their mental well-being.
+ZenGen is a web-based mental-health support platform for teenagers. It combines a structured self-assessment with rule-based scoring, supportive AI-generated guidance, and educational resources. It is an awareness and support tool, not a clinical diagnostic service.
+
+## Deployment status
+
+**Netlify deployment is not live yet.** No public application URL is claimed because this workspace is not authorized to access a Netlify site. Once a Netlify site is authorized, configure the required private environment variables and deploy the application; add the verified HTTPS URL here after checking it.
+
+**Source:** [Mohammedyouse/ZenGen-Prediction_of_mental-health_Platform](https://github.com/Mohammedyouse/ZenGen-Prediction_of_mental-health_Platform)
 
 ## Features
 
-- **Mental Health Assessment**: Users complete a questionnaire to evaluate mood, anxiety, and social well-being
-- **Rule-Based Analysis**: The system calculates scores and classifies users into Low, Moderate, or High Risk categories
-- **AI-Generated Summary**: Personalized feedback is generated using Google Gemini API
-- **AI Chatbot**: Provides supportive and context-aware responses for users
-- **User History**: Stores previous assessments for tracking mental health trends
+- Mood, anxiety, and social-wellbeing self-assessment.
+- Rule-based scoring and risk classification, with AI-generated explanatory feedback.
+- Supportive AI chatbot.
+- PostgreSQL-backed accounts, assessment history, chat messages, and resources.
+- Prometheus metrics endpoint and an optional provisioned Grafana monitoring dashboard.
 
----
+## Technology
 
-## Technology Stack
+- React, TypeScript, Vite, Tailwind CSS
+- Node.js and Express
+- PostgreSQL with Drizzle ORM and Neon serverless
+- Google Gemini API
+- Docker Compose, Kubernetes, Ansible, GitHub Actions, Prometheus, and Grafana
+- Netlify Functions adapter (`serverless-http`) for the Express API
 
-- **Frontend**: React, TypeScript, TailwindCSS  
-- **Backend**: Node.js, Express  
-- **Database**: PostgreSQL  
-- **AI Integration**: Google Gemini API  
+## Architecture
 
----
+```mermaid
+flowchart LR
+    Browser --> Web["React/Vite frontend"]
+    Web -->|same-origin /api/*| Function["Netlify Function / Express API"]
+    Function --> DB["PostgreSQL / Neon"]
+    Function --> Gemini["Google Gemini API"]
+    Docker["Docker Compose app"] --> Metrics["/metrics"]
+    Prometheus --> Metrics
+    Grafana --> Prometheus
+```
 
-## System Overview
+## Local setup
 
-ZenGen follows a client-server architecture:
+Requirements: Node.js 20 or later, npm, and access to a PostgreSQL database.
 
-1. User interacts with the React frontend  
-2. Data is sent to the Node.js backend  
-3. Backend applies rule-based scoring logic  
-4. Results are processed and stored in PostgreSQL  
-5. Google Gemini API generates summary and chatbot responses  
-6. Output is displayed to the user  
+1. Clone the repository and install its locked dependencies:
 
----
+   ```sh
+   git clone https://github.com/Mohammedyouse/ZenGen-Prediction_of_mental-health_Platform.git
+   cd ZenGen-Prediction_of_mental-health_Platform
+   npm ci
+   ```
 
-## Key Design Approach
+2. Create a local `.env` from `.env.example` and fill in the values locally. Do not commit `.env`.
 
-- The system uses **rule-based logic** for prediction  
-- No machine learning model is trained in the main system  
-- AI is used only for generating natural language responses  
+3. If the database schema needs to be initialized, review the Drizzle schema and the target database before applying it:
 
----
+   ```sh
+   npm run db:push
+   ```
 
-## Running the Project
+4. Start the development server:
 
-1. Install dependencies:
-   ```bash
-   npm install
+   ```sh
+   npm run dev
+   ```
 
-Set environment variables:
+   The application is served at `http://localhost:5000`.
 
-GEMINI_API_KEY=your_api_key_here
-DATABASE_URL=your_database_url
-SESSION_SECRET=your_secret_key
+## Environment variables
 
-Run the project:
+Provide these values in a local ignored `.env` file or in the hosting provider's private environment-variable settings. This repository contains names and placeholders only; never put secret values in source code or Git.
 
-npx tsx server/index.ts
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL/Neon connection string used by the application and PostgreSQL session store |
+| `SESSION_SECRET` | Secret used to sign authentication session cookies; required in production |
+| `GEMINI_API_KEY` | Server-side API key for Gemini-generated assessment feedback and chatbot responses |
 
-Open:
+See [.env.example](./.env.example) for the variable names.
 
-http://localhost:5000
-Project Structure
-zengen/
-├── client/       # React frontend
-├── server/       # Node.js backend
-├── shared/       # Shared schema
-Note
+## Build and checks
 
-ZenGen is designed as a mental health awareness and support tool.
-It does not provide clinical diagnosis and should not replace professional medical advice.
+```sh
+npm ci
+npm run check
+npm test
+npm run build
+```
 
+`npm run check` runs the TypeScript compiler. `npm test` exercises the HTTP metrics middleware with real local HTTP requests. `npm run build` builds the Vite frontend and bundles the Express server; a successful build is separate from the test result.
 
+## DevOps and monitoring
+
+- GitHub Actions runs dependency installation, TypeScript checking, and the production build on pushes and pull requests to `main`. Kubernetes manifest validation and a separate Kind rollout/rollback demonstration are also configured in the repository.
+- The related [DevOps CA-II repository](https://github.com/Mohammedyouse/DevOps-CA2_2023_27) contains the course case study and monitoring evidence.
+- [Dockerfile](./Dockerfile) builds the production application image. The monitoring stack is defined in [`devops/monitoring`](./devops/monitoring/).
+- Prometheus scrapes the ZenGen `/metrics` endpoint. The provisioned Grafana dashboard includes uptime, total requests, request rate, p95 latency, and error-rate panels.
+- Kubernetes Deployment and Service manifests are in [`devops/kubernetes`](./devops/kubernetes/). The Deployment expects a Kubernetes Secret named `zengen-secrets`; do not commit that Secret's values.
+- An Ansible playbook and inventory are in [`devops/ansible`](./devops/ansible/). The playbook is configuration, not proof that it has been executed or tested for idempotency.
+
+Start the local monitoring stack from the repository root:
+
+```sh
+docker compose --env-file .env -f devops/monitoring/docker-compose.yml up -d
+docker compose --env-file .env -f devops/monitoring/docker-compose.yml ps
+```
+
+Grafana is available at `http://localhost:3000`, Prometheus targets at `http://localhost:9090/targets`, and application metrics at `http://localhost:5000/metrics`.
+
+## Netlify requirements and limitations
+
+The Vite frontend is a static site; the Express API, database-backed sessions, PostgreSQL access, and Gemini integration require the included Netlify Function adapter and private production configuration. The Netlify configuration builds the frontend and routes the API to the function. A static-only deploy would **not** provide these backend features.
+
+Before deployment, authorize the Netlify CLI/site and configure `DATABASE_URL`, `SESSION_SECRET`, and `GEMINI_API_KEY` as private production environment variables in Netlify. The local Netlify build and function routes can be smoke-tested, but the public site, production database/session behavior, and live Gemini response remain unverified until authorized deployment and production testing.
+
+## Mental-health support notice
+
+ZenGen is intended for awareness and supportive education. It does not provide a clinical diagnosis and should not replace advice from a qualified mental-health professional.

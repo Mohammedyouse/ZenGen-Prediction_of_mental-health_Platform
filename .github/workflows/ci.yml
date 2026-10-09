@@ -28,7 +28,9 @@ jobs:
 
       - name: TypeScript Check
         run: npm run check
-        continue-on-error: true
+
+      - name: Run Tests
+        run: npm test
 
       - name: Build Application
         run: npm run build
