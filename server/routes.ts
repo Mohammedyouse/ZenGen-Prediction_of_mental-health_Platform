@@ -129,7 +129,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               model: MODEL_NAME
             });
 
-            const aiResult = await model.generateContent(prompt);
+            const withTimeout = <T>(p: Promise<T>, ms: number) =>
+              Promise.race([
+                p,
+                new Promise<T>((_, reject) => setTimeout(() => reject(new Error("Gemini timeout")), ms)),
+              ]);
+
+            const aiResult = await withTimeout(model.generateContent(prompt), 10000);
             const text = aiResult.response.text();
 
             try {
@@ -256,7 +262,13 @@ Guidelines:
 
 User message: ${lastMessage}`;
 
-        const result = await model.generateContent(prompt);
+        const withTimeout = <T>(p: Promise<T>, ms: number) =>
+          Promise.race([
+            p,
+            new Promise<T>((_, reject) => setTimeout(() => reject(new Error("Gemini timeout")), ms)),
+          ]);
+
+        const result = await withTimeout(model.generateContent(prompt), 10000);
         const response = await result.response;
         const text = response.text().trim();
 
