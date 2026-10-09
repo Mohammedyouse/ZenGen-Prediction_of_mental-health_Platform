@@ -4,7 +4,9 @@ ZenGen is a web-based mental-health support platform for teenagers. It combines 
 
 ## Deployment status
 
-**Netlify deployment is not live yet.** No public application URL is claimed because this workspace is not authorized to access a Netlify site. Once a Netlify site is authorized, configure the required private environment variables and deploy the application; add the verified HTTPS URL here after checking it.
+**Live frontend:** [https://zengen-prediction-platform.netlify.app](https://zengen-prediction-platform.netlify.app)
+
+**Backend status:** The public frontend loads, but its Netlify API function currently fails because `DATABASE_URL` is missing from the site's production environment. Database-backed features, authentication, and the chatbot are not yet verified as working in production. Add the required variables privately in Netlify and redeploy before using these features.
 
 **Source:** [Mohammedyouse/ZenGen-Prediction_of_mental-health_Platform](https://github.com/Mohammedyouse/ZenGen-Prediction_of_mental-health_Platform)
 
@@ -120,7 +122,7 @@ Grafana is available at `http://localhost:3000`, Prometheus targets at `http://l
 
 The Vite frontend is a static site; the Express API, database-backed sessions, PostgreSQL access, and Gemini integration require the included Netlify Function adapter and private production configuration. The Netlify configuration builds the frontend and routes the API to the function. A static-only deploy would **not** provide these backend features.
 
-Before deployment, authorize the Netlify CLI/site and configure `DATABASE_URL`, `SESSION_SECRET`, and `GEMINI_API_KEY` as private production environment variables in Netlify. The local Netlify build and function routes can be smoke-tested, but the public site, production database/session behavior, and live Gemini response remain unverified until authorized deployment and production testing.
+The public frontend deployment has been verified. The production function currently returns an error because `DATABASE_URL` is absent from this Netlify site's settings. Configure `DATABASE_URL`, `SESSION_SECRET`, and `GEMINI_API_KEY` privately for the production context and Functions scope, then redeploy. Until the function health check, database-backed endpoints, session behavior, and live Gemini response are verified successfully, treat backend features as unavailable in production.
 
 ## Mental-health support notice
 
