@@ -5,7 +5,7 @@ import {
   resources, type Resource, type InsertResource
 } from "../shared/schema.js";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 // Storage interface remains the same
 export interface IStorage {
@@ -47,7 +47,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const results = await db.select().from(users).where(eq(users.username, username));
+    const trimmed = (username || "").trim();
+    if (!trimmed) return undefined;
+    const results = await db
+      .select()
+      .from(users)
+      .where(sql`lower(${users.username}) = lower(${trimmed})`);
     return results.length > 0 ? results[0] : undefined;
   }
 

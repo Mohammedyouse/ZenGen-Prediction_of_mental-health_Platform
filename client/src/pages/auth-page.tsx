@@ -53,28 +53,36 @@ export default function AuthPage() {
   });
 
   const onLoginSubmit = (values: z.infer<typeof loginSchema>) => {
-    loginMutation.mutate(values, {
-      onSuccess: () => {
-        toast({
-          title: "Welcome back!",
-          description: "Signed in successfully to your ZenGen space.",
-        });
-        navigate("/home");
+    loginMutation.mutate(
+      {
+        username: values.username.trim(),
+        password: values.password,
       },
-      onError: (err) => {
-        toast({
-          title: "Sign in failed",
-          description: err.message || "Invalid credentials. Please verify your details.",
-          variant: "destructive",
-        });
-      },
-    });
+      {
+        onSuccess: () => {
+          toast({
+            title: "Welcome back!",
+            description: "Signed in successfully to your ZenGen space.",
+          });
+          navigate("/home");
+        },
+        onError: (err) => {
+          const rawMsg = err.message || "Invalid credentials. Please verify your details.";
+          toast({
+            title: "Sign in failed",
+            description: rawMsg,
+            variant: "destructive",
+          });
+        },
+      }
+    );
   };
 
   const onRegisterSubmit = (values: z.infer<typeof registerSchema>) => {
+    const trimmedUsername = values.username.trim();
     registerMutation.mutate(
       {
-        username: values.username,
+        username: trimmedUsername,
         password: values.password,
       },
       {
@@ -86,11 +94,26 @@ export default function AuthPage() {
           navigate("/home");
         },
         onError: (err) => {
-          toast({
-            title: "Registration failed",
-            description: err.message || "Could not register. Username may already be in use.",
-            variant: "destructive",
-          });
+          const rawMsg = err.message || "Could not register. Username may already be in use.";
+          const isDuplicate =
+            rawMsg.toLowerCase().includes("already exists") ||
+            rawMsg.toLowerCase().includes("sign in");
+
+          if (isDuplicate) {
+            toast({
+              title: "Account Already Exists",
+              description: rawMsg,
+              variant: "destructive",
+            });
+            loginForm.setValue("username", trimmedUsername);
+            setActiveTab("login");
+          } else {
+            toast({
+              title: "Registration failed",
+              description: rawMsg,
+              variant: "destructive",
+            });
+          }
         },
       }
     );
