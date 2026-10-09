@@ -98,6 +98,15 @@ npm run build
 - Kubernetes Deployment and Service manifests are in [`devops/kubernetes`](./devops/kubernetes/). The Deployment expects a Kubernetes Secret named `zengen-secrets`; do not commit that Secret's values.
 - An Ansible playbook and inventory are in [`devops/ansible`](./devops/ansible/). The playbook is configuration, not proof that it has been executed or tested for idempotency.
 
+After creating a private `.env`, create/update the Kubernetes Secret without printing its values, then apply the manifests:
+
+```sh
+kubectl create secret generic zengen-secrets --from-env-file=.env --dry-run=client -o yaml | kubectl apply -f -
+kubectl apply -f devops/kubernetes/deployment.yaml
+kubectl apply -f devops/kubernetes/service.yaml
+kubectl rollout status deployment/zengen-deployment
+```
+
 Start the local monitoring stack from the repository root:
 
 ```sh
