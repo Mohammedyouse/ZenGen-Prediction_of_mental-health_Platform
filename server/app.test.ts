@@ -3,7 +3,11 @@ import { once } from "node:events";
 import test from "node:test";
 import { createApp } from "./app";
 
-test("API Endpoints & Wellness Services Test Suite", async () => {
+test("API Endpoints & Wellness Services Test Suite", async (t) => {
+  if (!process.env.DATABASE_URL) {
+    t.skip("Skipping live database integration tests in runner without DATABASE_URL");
+    return;
+  }
   const { server } = await createApp();
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
